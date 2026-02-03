@@ -14,11 +14,11 @@ def index(request):
 def movies_list(request):
     movies = Movies.objects.all()
     print(movies)
-    return render(request, 'movies.html', context={'movies': movies})
+    return render(request, 'movies_list.html', context={'movies': movies})
 
-def product_detail(request, product_id):
-    product = Movies.objects.get(id=product_id)
-    return render(request, "products/product_detail.html", context={"product": product})
+def movies_detail(request, movies_id):
+    movies = Movies.objects.get(id=movies_id)
+    return render(request, "movies/movies_detail.html", context={"movies": movies})
 
 
 def base(request):
