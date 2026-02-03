@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for movies in movies %}
+<div style="width: 10;">
+    <p>
+        {{ movies.name }}
+    </p>
+    <p>
+        {{ movies.description }}
+    </p>
+    <p>
+        {{ movies.price }}
+    </p>
+    <a href="/movies/{{movies.id}}/" class="btn btn-primary">Посмотреть</a>
+
+</div>
+{% endfor %}
+{% endblock %}
