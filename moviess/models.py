@@ -12,6 +12,7 @@ class Category(models.Model):
 
 
 class Movies(models.Model):
+    image = models.ImageField()
     name = models.CharField(max_length=255)
     price = models.IntegerField(default=0)
     description = models.TextField
