@@ -1,14 +1,13 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 from movies.models import Movies
 
 
-Movies.objects
+# Movies.objects
 
 # Create your views here.
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the movies index")
+# def index(request):
+#     return HttpResponse("Hello, world. You're at the movies index")
 
 
 def movies_list(request):
