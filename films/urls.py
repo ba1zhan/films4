@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from movies.views import base, movies_detail, movies_list
+from moviess.views import base, movies_detail, movies_list
 
 
 urlpatterns = [

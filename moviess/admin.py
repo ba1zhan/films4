@@ -1,5 +1,5 @@
 from django.contrib import admin
-from movies.models import Category, Movies
+from moviess.models import Category, Movies
 # Register your models here.
 
 admin.site.register(Category)
