@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label>Название:</label>
+    <input type="text" name="name">
+    <p></p>
+    <label>Описание:</label>
+    <input type="text" name="description">
+    <p></p>
+    <label>Изображение:</label>
+    <input type="file" name="image">
+    <p></p>
+    <button type="submit">Создать фильм</button>
+</form>
+
+{% endblock %}

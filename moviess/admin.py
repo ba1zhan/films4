@@ -1,8 +1,9 @@
 from django.contrib import admin
-from moviess.models import Category, Movies
+from moviess.models import Category, Movies, Fantasy
 # Register your models here.
 
 admin.site.register(Category)
+admin.site.register(Fantasy)
 
 @admin.register(Movies)
 class ProductAdmin(admin.ModelAdmin):

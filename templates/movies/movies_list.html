@@ -1,19 +1,54 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% for movies in movies %}
-<div style="width: 10;">
-    <p>
-        {{ movies.name }}
-    </p>
-    <p>
-        {{ movies.description }}
-    </p>
-    <p>
-        {{ movies.price }}
-    </p>
-    <a href="/movies/{{movies.id}}/" class="btn btn-primary">Посмотреть</a>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="GET" class="d-flex gap-2">
+                <label for="category" class="form-label mt-2">Категория:</label>
+                <select name="category" id="category" class="form-select" style="width: 200px;">
+                    <option value="">Все</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                
+                <label for="search" class="form-label mt-2">Поиск:</label>
+                <input type="text" name="search" id="search" class="form-control" style="width: 250px;" placeholder="Название..." value="{{ search }}">
+                
+                <button type="submit" class="btn btn-primary">Найти</button>
+                <a href="/movies/" class="btn btn-secondary">Очистить</a>
+            </form>
+        </div>
+    </div>
 
+    <div class="row">
+        {% for movies in movies %}
+        <div class="col-md-4 mb-4">
+            <div class="card" style="height: 100%;">
+                {% if movies.image %}
+                <img src="{{movies.image.url}}" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                {% else %}
+                <img src="/media/empty_image.jpg" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movies.name }}</h5>
+                    <p class="card-text">{{ movies.description|truncatewords:15 }}</p>
+                    {% if movies.category %}
+                    <p class="card-text"><small class="text-muted">Категория: {{ movies.category.name }}</small></p>
+                    {% endif %}
+                    <p class="card-text"><strong>Цена: {{ movies.price }} ₽</strong></p>
+                    <a href="{{movies.id}}/" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-md-12">
+            <div class="alert alert-info">Фильмы не найдены. <a href="/movies/">Очистить фильтры</a></div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-{% endfor %}
 {% endblock %}
