@@ -7,5 +7,5 @@ admin.site.register(Fantasy)
 
 @admin.register(Movies)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "category", "created_at", "updated_at")
+    list_display = ("name", "category", "created_at", "updated_at")
     list_filter = ("category",)

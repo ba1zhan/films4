@@ -23,15 +23,51 @@
                         <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/movies/">Category</a>
+                        <a class="nav-link" href="/movies/">Фильмы</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies/create/">Добавить фильм</a>
+                    </li>
                 </ul>
-
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+                        <span class="navbar-text me-3">{{ user.username }}</span>
+                        <a href="/auth/logout/" class="btn btn-outline-danger btn-sm">Выход</a>
+                    {% else %}
+                        <a href="/auth/login/" class="btn btn-outline-primary btn-sm me-2">Вход</a>
+                        <a href="/auth/register/" class="btn btn-primary btn-sm">Регистрация</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
 </header>
 
-{% block content %}
-{% endblock %}
+<div class="container mt-5">
+    {% if movies %}
+    <h2>Популярные фильмы</h2>
+    <div class="row mt-4">
+        {% for movie in movies %}
+        <div class="col-md-4 mb-4">
+            <div class="card" style="height: 100%;">
+                {% if movie.image %}
+                <img src="{{movie.image.url}}" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                {% else %}
+                <img src="/media/empty_image.jpg" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.name }}</h5>
+                    <p class="card-text">{{ movie.description|truncatewords:10 }}</p>
+                    {% if movie.category %}
+                    <p class="card-text"><small class="text-muted">Категория: {{ movie.category.name }}</small></p>
+                    {% endif %}
+                    <a href="/movies/{{movie.id}}/" class="btn btn-primary">Смотреть</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}
+    {% endblock %}
+</div>

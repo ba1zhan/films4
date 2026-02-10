@@ -21,7 +21,6 @@ class Fantasy(models.Model):
 class Movies(models.Model):
     image = models.ImageField(null=True, blank=True, upload_to='moviess/')
     name = models.CharField(max_length=255)
-    price = models.IntegerField(default=0)
     description = models.TextField(default='', blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
@@ -31,4 +30,4 @@ class Movies(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.name} - {self.price}"
+        return f"{self.name}"

@@ -1,13 +1,40 @@
 from django.shortcuts import redirect, render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from moviess.models import Movies, Category
+from moviess.forms import MoviesForm, RegisterForm, LoginForm
 
 
-# Movies.objects
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('/movies/')
+    else:
+        form = RegisterForm()
+    return render(request, "auth/register.html", {'form': form})
 
-# Create your views here.
 
-# def index(request):
-#     return HttpResponse("Hello, world. You're at the movies index")
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                return redirect('/movies/')
+    else:
+        form = LoginForm()
+    return render(request, "auth/login.html", {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/movies/')
 
 
 def movies_list(request):
@@ -32,23 +59,22 @@ def movies_detail(request, movies_id):
         return render(
               request, "movies/movies_detail.html", context={"movies": movies}
                       )
+@login_required(login_url='/auth/login/')
 def movies_create(request):
     if request.method == "GET":
-        return render(request, "movies/movies_create.html")
+        form = MoviesForm()
+        return render(request, "movies/movies_create.html", context={'form': form})
     elif request.method == "POST":
-        name = request.POST.get("name")
-        price = request.POST.get("price")
-        description = request.POST.get("description")
-        category_id = request.POST.get("category")
-        category = Category.objects.get(id=category_id)
-        movies = Movies.objects.create(
-            name=name, price=price, description=description, category=category
-        )
-        return redirect('/movies/')   
+        form = MoviesForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('/movies/')
+        else:
+            return render(request, "movies/movies_create.html", context={'form': form})   
         
 
 
 def base(request):
     if request.method == "GET":
-        categoires = Category.objects.all()
-        return render(request, "base.html", context={'categories': categoires})
+        movies = Movies.objects.all()
+        return render(request, "base.html", context={'movies': movies})
