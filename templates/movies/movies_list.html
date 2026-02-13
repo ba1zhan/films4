@@ -4,48 +4,87 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <form method="GET" class="d-flex gap-2">
-                <label for="category" class="form-label mt-2">Категория:</label>
-                <select name="category" id="category" class="form-select" style="width: 200px;">
-                    <option value="">Все</option>
-                    {% for category in categories %}
-                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-                
-                <label for="search" class="form-label mt-2">Поиск:</label>
-                <input type="text" name="search" id="search" class="form-control" style="width: 250px;" placeholder="Название..." value="{{ search }}">
-                
-                <button type="submit" class="btn btn-primary">Найти</button>
-                <a href="/movies/" class="btn btn-secondary">Очистить</a>
+            <form method="GET">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Поиск..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-7">
+                        <button type="submit" class="btn btn-primary">Поиск</button>
+                        <a href="/movies/" class="btn btn-secondary">Очистить</a>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Категории:</label>
+                        {% for cat in categories %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categories" 
+                                   value="{{ cat.id }}" id="cat{{ cat.id }}"
+                                   {% if cat.id in selected_categories %}checked{% endif %}>
+                            <label class="form-check-label" for="cat{{ cat.id }}">
+                                {{ cat.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Жанры:</label>
+                        {% for tag in tags %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="tags" 
+                                   value="{{ tag.id }}" id="tag{{ tag.id }}"
+                                   {% if tag.id in selected_tags %}checked{% endif %}>
+                            <label class="form-check-label" for="tag{{ tag.id }}">
+                                {{ tag.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </form>
         </div>
     </div>
 
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <p class="text-muted">Найдено фильмов: <strong>{{ movies|length }}</strong></p>
+        </div>
+    </div>
+
     <div class="row">
-        {% for movies in movies %}
+        {% for movie in movies %}
         <div class="col-md-4 mb-4">
-            <div class="card" style="height: 100%;">
-                {% if movies.image %}
-                <img src="{{movies.image.url}}" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+            <div class="card h-100">
+                {% if movie.image %}
+                    <img src="{{ movie.image.url }}" class="card-img-top" alt="{{ movie.name }}" style="height: 250px; object-fit: cover;">
                 {% else %}
-                <img src="/media/empty_image.jpg" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                    <div style="height: 250px; background: #e9ecef; display: flex; align-items: center;">
+                        <span class="text-muted w-100 text-center">Нет изображения</span>
+                    </div>
                 {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ movies.name }}</h5>
-                    <p class="card-text">{{ movies.description|truncatewords:15 }}</p>
-                    {% if movies.category %}
-                    <p class="card-text"><small class="text-muted">Категория: {{ movies.category.name }}</small></p>
+                    <h5 class="card-title">{{ movie.name }}</h5>
+                    <p class="card-text text-muted small">{{ movie.description|truncatewords:15 }}</p>
+                    {% if movie.category %}
+                        <p class="card-text"><small class="badge bg-primary">{{ movie.category }}</small></p>
                     {% endif %}
-                    <a href="{{movies.id}}/" class="btn btn-primary">Смотреть</a>
+                    {% if movie.tags.all %}
+                        <div class="mb-2">
+                            {% for tag in movie.tags.all %}
+                                <small class="badge bg-info text-dark">{{ tag.name }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <a href="/movies/{{ movie.id }}/" class="btn btn-primary btn-sm">Подробнее</a>
                 </div>
             </div>
         </div>
         {% empty %}
         <div class="col-md-12">
-            <div class="alert alert-info">Фильмы не найдены. <a href="/movies/">Очистить фильтры</a></div>
+            <div class="alert alert-info">Фильмы не найдены. Попробуйте изменить фильтры.</div>
         </div>
         {% endfor %}
     </div>

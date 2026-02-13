@@ -8,10 +8,9 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Movies</a>
+            <a class="navbar-brand fw-bold" href="/">Movies</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -20,7 +19,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        <a class="nav-link" href="/">Главная</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/movies/">Фильмы</a>
@@ -29,6 +28,13 @@
                         <a class="nav-link" href="/movies/create/">Добавить фильм</a>
                     </li>
                 </ul>
+                
+                <form method="GET" action="/movies/" class="d-flex me-3">
+                    <input class="form-control form-control-sm me-2" type="search" name="search" 
+                           placeholder="Поиск фильмов..." aria-label="Search" style="width: 200px;">
+                    <button class="btn btn-outline-primary btn-sm" type="submit">Поиск</button>
+                </form>
+                
                 <div class="d-flex gap-2">
                     {% if user.is_authenticated %}
                         <span class="navbar-text me-3">{{ user.username }}</span>
@@ -44,30 +50,56 @@
 </header>
 
 <div class="container mt-5">
-    {% if movies %}
-    <h2>Популярные фильмы</h2>
-    <div class="row mt-4">
+    {% if request.path == '/' %}
+    <div class="mb-4">
+        <form method="GET" action="/movies/">
+            <div class="row">
+                <div class="col-md-9">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Поиск фильмов..." value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Поиск</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <h2 class="mb-4">Популярные фильмы</h2>
+    <div class="row">
         {% for movie in movies %}
         <div class="col-md-4 mb-4">
-            <div class="card" style="height: 100%;">
+            <div class="card h-100">
                 {% if movie.image %}
-                <img src="{{movie.image.url}}" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                    <img src="{{ movie.image.url }}" class="card-img-top" alt="{{ movie.name }}" style="height: 250px; object-fit: cover;">
                 {% else %}
-                <img src="/media/empty_image.jpg" class="card-img-top" alt="..." style="height: 250px; object-fit: cover;">
+                    <div style="height: 250px; background: #e9ecef; display: flex; align-items: center;">
+                        <span class="text-muted w-100 text-center">Нет изображения</span>
+                    </div>
                 {% endif %}
                 <div class="card-body">
                     <h5 class="card-title">{{ movie.name }}</h5>
-                    <p class="card-text">{{ movie.description|truncatewords:10 }}</p>
+                    <p class="card-text text-muted small">{{ movie.description|truncatewords:15 }}</p>
                     {% if movie.category %}
-                    <p class="card-text"><small class="text-muted">Категория: {{ movie.category.name }}</small></p>
+                        <p class="card-text"><small class="badge bg-primary">{{ movie.category }}</small></p>
                     {% endif %}
-                    <a href="/movies/{{movie.id}}/" class="btn btn-primary">Смотреть</a>
+                    {% if movie.tags.all %}
+                        <div class="mb-2">
+                            {% for tag in movie.tags.all %}
+                                <small class="badge bg-info text-dark">{{ tag.name }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <a href="/movies/{{ movie.id }}/" class="btn btn-primary btn-sm">Подробнее</a>
                 </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-md-12">
+            <div class="alert alert-info">Фильмы не найдены.</div>
         </div>
         {% endfor %}
     </div>
     {% endif %}
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
 </div>

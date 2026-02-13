@@ -1,8 +1,9 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from moviess.models import Movies, Category
+from moviess.models import Movies, Category, Fantasy
 from moviess.forms import MoviesForm, RegisterForm, LoginForm
+from django.db.models import Q
 
 
 def register(request):
@@ -38,27 +39,46 @@ def logout_view(request):
 
 
 def movies_list(request):
-    if request.method == "GET":
-        movies = Movies.objects.all()
-        categories = Category.objects.all()
-        category_id = request.GET.get("category")
-        search = request.GET.get("search")
-        
-        if category_id:
-            movies = movies.filter(category_id=category_id)
-        if search:
-            movies = movies.filter(name__icontains=search)
-            
-        return render(
-            request, 'movies/movies_list.html', context={'movies': movies, 'categories': categories, 'selected_category': category_id, 'search': search}
-            )
+    movies = Movies.objects.all()
+    categories = Category.objects.all()
+    tags = Fantasy.objects.all()
+    
+    # Множественное выбор категорий
+    selected_categories = request.GET.getlist("categories")
+    if selected_categories:
+        movies = movies.filter(category_id__in=selected_categories)
+    
+    # Множественный выбор тегов
+    selected_tags = request.GET.getlist("tags")
+    if selected_tags:
+        movies = movies.filter(tags__id__in=selected_tags).distinct()
+    
+    # Поиск
+    search = request.GET.get("search", "").strip()
+    if search:
+        movies = movies.filter(
+            Q(name__icontains=search) | 
+            Q(description__icontains=search)
+        ).distinct()
+    
+    context = {
+        'movies': movies,
+        'categories': categories,
+        'tags': tags,
+        'selected_categories': [int(c) for c in selected_categories],
+        'selected_tags': [int(t) for t in selected_tags],
+        'search': search,
+    }
+    return render(request, 'movies/movies_list.html', context)
+
+
+
 
 def movies_detail(request, movies_id):
-    if request.method == "GET":
-        movies = Movies.objects.get(id=movies_id)
-        return render(
-              request, "movies/movies_detail.html", context={"movies": movies}
-                      )
+    movies = Movies.objects.get(id=movies_id)
+    return render(request, "movies/movies_detail.html", context={"movies": movies})
+
+
 @login_required(login_url='/auth/login/')
 def movies_create(request):
     if request.method == "GET":
@@ -70,11 +90,24 @@ def movies_create(request):
             form.save()
             return redirect('/movies/')
         else:
-            return render(request, "movies/movies_create.html", context={'form': form})   
-        
+            return render(request, "movies/movies_create.html", context={'form': form})
 
 
 def base(request):
-    if request.method == "GET":
-        movies = Movies.objects.all()
-        return render(request, "base.html", context={'movies': movies})
+    return render(request, "base.html")
+
+def base(request):
+    movies = Movies.objects.all()
+    search = request.GET.get("search", "").strip()
+    
+    if search:
+        movies = movies.filter(
+            Q(name__icontains=search) | 
+            Q(description__icontains=search)
+        ).distinct()
+    
+    context = {
+        'movies': movies,
+        'search': search,
+    }
+    return render(request, "base.html", context)
