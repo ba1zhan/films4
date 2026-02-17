@@ -30,7 +30,7 @@ def register(request):
 def login_user(request):
     if request.method == "GET":
         forms = LoginForms()
-        return render(request, "users/login.html", context={"forms": forms})
+        return render(request, "user/login.html", context={"forms": forms})
 
     if request.method == "POST":
         forms = LoginForms(request.POST)
@@ -52,13 +52,13 @@ def logout_user(request):
 
 
 def profile(request):
-    return render(request, "users/profile.html")
+    return render(request, "user/profile.html")
 
 
 def update_profile(request):
     if request.method == "GET":
         forms = UpdateProfileForm(request.POST or None)
-        return render(request, "users/update_profile.html", context={"forms": forms})
+        return render(request, "user/update_profile.html", context={"forms": forms})
 
     if request.method == "POST":
         forms = UpdateProfileForm(request.POST, request.FILES)
@@ -75,4 +75,4 @@ def update_profile(request):
         request.user.save()
         request.user.profile.save()
 
-    return redirect("/products/")
+    return redirect("/movies/")
