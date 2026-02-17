@@ -17,8 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import static
-from moviess.views import base, movies_detail, movies_list, movies_create, register, login_view, logout_view
+from moviess.views import base, movies_detail, movies_list, movies_create, register, login_view, logout_view, MoviesListView, MoviesCreateView
 from django.conf import settings
+
+
+class_urls = [
+    path("class/movies/", MoviesListView.as_view()),
+    path("class/movies_create/", MoviesCreateView.as_view()),
+]
+
+
+
+user_urls = [
+    path('auth/register/', register),
+    path('auth/login/', login_view),
+    path('auth/logout/', logout_view)
+]
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +40,6 @@ urlpatterns = [
     path('movies/', movies_list),
     path('movies/create/', movies_create),
     path("movies/<int:movies_id>/", movies_detail),
-    path('auth/register/', register),
-    path('auth/login/', login_view),
-    path('auth/logout/', logout_view),
+    *class_urls,
+    *user_urls
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT )

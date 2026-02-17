@@ -41,3 +41,15 @@ class SearchForm(forms.Form):
         from moviess.models import Category
         self.fields['category'].queryset = Category.objects.all()
         self.fields['category'].empty_label = "Все категории"
+
+
+
+class CreateFilmForm(forms.ModelForm):
+    name = forms.CharField()
+    description = forms.CharField()
+    image = forms.ImageField()
+    price = forms.IntegerField()
+
+    class Meta:
+        model = Movies
+        fields = ["name", "description", "image", "price"]

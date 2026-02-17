@@ -2,8 +2,52 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from moviess.models import Movies, Category, Fantasy
-from moviess.forms import MoviesForm, RegisterForm, LoginForm
+from moviess.forms import MoviesForm, RegisterForm, LoginForm, SearchForm, CreateFilmForm
 from django.db.models import Q
+from django.views.generic import CreateView, ListView
+
+
+
+class MoviesListView(ListView):
+    model = Movies
+    template_name = "movies/movies_list.html"
+    context_object_name = "movies"
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["forms"] = SearchForm()
+        return context
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | Q(description__icontains=search)
+            )
+        category_id = self.request.GET.get("category_id")
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        price_choice = self.request.GET.get("price_choice")
+        if price_choice:
+            if price_choice == "1":
+                queryset = queryset.filter(price__gt=100)
+            elif price_choice == "2":
+                queryset = queryset.filter(price__lt=100)
+        tags = self.request.GET.getlist("tags")
+        if tags:
+            queryset = queryset.filter(tags__in=tags)
+        return queryset
+    
+
+class MoviesCreateView(CreateView):
+    model = Movies
+    template_name = "movies/movies_create.html"
+    form_class = CreateFilmForm
+    success_url = "/class/movies/"
+
+
 
 
 def register(request):
@@ -43,17 +87,14 @@ def movies_list(request):
     categories = Category.objects.all()
     tags = Fantasy.objects.all()
     
-    # Множественное выбор категорий
     selected_categories = request.GET.getlist("categories")
     if selected_categories:
         movies = movies.filter(category_id__in=selected_categories)
     
-    # Множественный выбор тегов
     selected_tags = request.GET.getlist("tags")
     if selected_tags:
         movies = movies.filter(tags__id__in=selected_tags).distinct()
     
-    # Поиск
     search = request.GET.get("search", "").strip()
     if search:
         movies = movies.filter(
