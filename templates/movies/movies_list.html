@@ -50,7 +50,7 @@
 
     <div class="row mb-3">
         <div class="col-md-12">
-            <p class="text-muted">Найдено фильмов: <strong>{{ movies|length }}</strong></p>
+            <p class="text-muted">Найдено фильмов: <strong>{{ total_movies }}</strong></p>
         </div>
     </div>
 
@@ -87,6 +87,37 @@
             <div class="alert alert-info">Фильмы не найдены. Попробуйте изменить фильтры.</div>
         </div>
         {% endfor %}
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+
+                    {% for num in paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 {% endblock %}
