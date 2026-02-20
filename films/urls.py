@@ -17,9 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import static
-from moviess.views import base, movies_detail, movies_list, movies_create, register, login_view, logout_view, MoviesListView, MoviesCreateView
+from moviess.views import base, movies_detail, movies_list, movies_create,  MoviesListView, MoviesCreateView
 from django.conf import settings
-
+from user.views import login_user, logout_user, profile, register, update_profile
 
 class_urls = [
     path("class/movies/", MoviesListView.as_view()),
@@ -30,8 +30,10 @@ class_urls = [
 
 user_urls = [
     path('auth/register/', register),
-    path('auth/login/', login_view),
-    path('auth/logout/', logout_view)
+    path('auth/login/', login_user),
+    path('auth/logout/', logout_user),
+    path("auth/profile/", profile),
+    path("auth/update_profile/", update_profile)
 ]
 
 urlpatterns = [

@@ -24,7 +24,7 @@ def register(request):
             username=forms.cleaned_data.get("username"),  # pyright: ignore[reportArgumentType]
             password=forms.cleaned_data.get("password"),
         )
-    return redirect("/movies/")
+    return redirect("/moviess/")
 
 
 def login_user(request):
@@ -43,7 +43,7 @@ def login_user(request):
         )
 
         login(request, user)
-    return redirect("/movies/")
+    return redirect("/moviess/")
 
 
 def logout_user(request):
@@ -75,4 +75,4 @@ def update_profile(request):
         request.user.save()
         request.user.profile.save()
 
-    return redirect("/movies/")
+    return redirect("/moviess/")
