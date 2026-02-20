@@ -209,35 +209,35 @@ def logout_view(request):
     return redirect('/movies/')
 
 
-def movies_list(request):
-    movies = Movies.objects.all()
-    categories = Category.objects.all()
-    tags = Fantasy.objects.all()
+# def movies_list(request):
+#     movies = Movies.objects.all()
+#     categories = Category.objects.all()
+#     tags = Fantasy.objects.all()
     
-    selected_categories = request.GET.getlist("categories")
-    if selected_categories:
-        movies = movies.filter(category_id__in=selected_categories)
+#     selected_categories = request.GET.getlist("categories")
+#     if selected_categories:
+#         movies = movies.filter(category_id__in=selected_categories)
     
-    selected_tags = request.GET.getlist("tags")
-    if selected_tags:
-        movies = movies.filter(tags__id__in=selected_tags).distinct()
+#     selected_tags = request.GET.getlist("tags")
+#     if selected_tags:
+#         movies = movies.filter(tags__id__in=selected_tags).distinct()
     
-    search = request.GET.get("search", "").strip()
-    if search:
-        movies = movies.filter(
-            Q(name__icontains=search) | 
-            Q(description__icontains=search)
-        ).distinct()
+#     search = request.GET.get("search", "").strip()
+#     if search:
+#         movies = movies.filter(
+#             Q(name__icontains=search) | 
+#             Q(description__icontains=search)
+#         ).distinct()
     
-    context = {
-        'movies': movies,
-        'categories': categories,
-        'tags': tags,
-        'selected_categories': [int(c) for c in selected_categories],
-        'selected_tags': [int(t) for t in selected_tags],
-        'search': search,
-    }
-    return render(request, 'movies/movies_list.html', context)
+#     context = {
+#         'movies': movies,
+#         'categories': categories,
+#         'tags': tags,
+#         'selected_categories': [int(c) for c in selected_categories],
+#         'selected_tags': [int(t) for t in selected_tags],
+#         'search': search,
+#     }
+#     return render(request, 'movies/movies_list.html', context)
 
 
 

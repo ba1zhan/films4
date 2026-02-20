@@ -15,7 +15,7 @@ from .forms import LoginForms, RegisterForms, UpdateProfileForm
 def register(request):
     if request.method == "GET":
         forms = RegisterForms()
-        return render(request, "users/register.html", context={"forms": forms})
+        return render(request, "auth/register.html", context={"forms": forms})
     if request.method == "POST":
         forms = RegisterForms(request.POST)
         if not forms.is_valid():
@@ -30,7 +30,7 @@ def register(request):
 def login_user(request):
     if request.method == "GET":
         forms = LoginForms()
-        return render(request, "user/login.html", context={"forms": forms})
+        return render(request, "auth/login.html", context={"forms": forms})
 
     if request.method == "POST":
         forms = LoginForms(request.POST)
@@ -52,13 +52,13 @@ def logout_user(request):
 
 
 def profile(request):
-    return render(request, "user/profile.html")
+    return render(request, "auth/profile.html")
 
 
 def update_profile(request):
     if request.method == "GET":
         forms = UpdateProfileForm(request.POST or None)
-        return render(request, "user/update_profile.html", context={"forms": forms})
+        return render(request, "auth/update_profile.html", context={"forms": forms})
 
     if request.method == "POST":
         forms = UpdateProfileForm(request.POST, request.FILES)
